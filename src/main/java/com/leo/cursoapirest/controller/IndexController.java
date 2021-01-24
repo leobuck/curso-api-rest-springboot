@@ -59,6 +59,8 @@ public class IndexController {
 	
 	@PutMapping(value = "/", produces = "application/json")
 	public ResponseEntity<Usuario> atualizar(@RequestBody Usuario usuario) {
+		usuario.getTelefones().forEach(x -> x.setUsuario(usuario));
+		
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 		
 		return ResponseEntity.ok(usuarioSalvo);
