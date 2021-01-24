@@ -23,6 +23,9 @@ public class IndexController {
 	
 	@Autowired
 	private UsuarioRepository usuarioRepository;
+	
+//	@Autowired
+//	private TelefoneRepository telefoneRepository;
 
 	@GetMapping(value = "/{id}/relatorio/{venda}", produces = "application/json")
 	public ResponseEntity<Usuario> relatorio(@PathVariable(value = "id") Long id, @PathVariable(value = "venda") Long venda) {
@@ -47,6 +50,8 @@ public class IndexController {
 	
 	@PostMapping(value = "/", produces = "application/json")
 	public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario usuario) {
+		usuario.getTelefones().forEach(x -> x.setUsuario(usuario));
+		
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 		
 		return ResponseEntity.ok(usuarioSalvo);
