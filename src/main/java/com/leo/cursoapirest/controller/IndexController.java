@@ -17,16 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.leo.cursoapirest.model.Usuario;
 import com.leo.cursoapirest.repository.UsuarioRepository;
 
+//@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping(value = "/usuario")
 public class IndexController {
 	
 	@Autowired
 	private UsuarioRepository usuarioRepository;
-	
-//	@Autowired
-//	private TelefoneRepository telefoneRepository;
 
+//	@CrossOrigin(origins = "http://localhost:8080/")
 	@GetMapping(value = "/{id}/relatorio/{venda}", produces = "application/json")
 	public ResponseEntity<Usuario> relatorio(@PathVariable(value = "id") Long id, @PathVariable(value = "venda") Long venda) {
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
