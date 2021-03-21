@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -25,7 +26,9 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter {
 			.disable().authorizeRequests().antMatchers("/").permitAll()
 			.antMatchers("/index").permitAll()
 			.anyRequest().authenticated().and().logout().logoutSuccessUrl("/")
-			.logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
+			.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+			.and().addFilterBefore(new JWTLoginFilter("/login", authenticationManager()), UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(new JwtApiAutenticacaoFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
 	
 	@Override
