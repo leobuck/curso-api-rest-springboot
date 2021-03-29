@@ -34,9 +34,38 @@ public class IndexController {
 		return ResponseEntity.ok(usuario.get());
 	}
 	
-	@GetMapping(value = "/{id}", produces = "application/json")
-	public ResponseEntity<Usuario> index(@PathVariable(value = "id") Long id) {
+//	@GetMapping(value = "/v1/{id}", produces = "application/json")
+//	public ResponseEntity<Usuario> indexV1(@PathVariable(value = "id") Long id) {
+//		Optional<Usuario> usuario = usuarioRepository.findById(id);
+//		
+//		System.out.println("Versão 1");
+//		
+//		return ResponseEntity.ok(usuario.get());
+//	}
+//	
+//	@GetMapping(value = "/v2/{id}", produces = "application/json")
+//	public ResponseEntity<Usuario> indexV2(@PathVariable(value = "id") Long id) {
+//		Optional<Usuario> usuario = usuarioRepository.findById(id);
+//		
+//		System.out.println("Versão 2");
+//		
+//		return ResponseEntity.ok(usuario.get());
+//	}
+	
+	@GetMapping(value = "/{id}", produces = "application/json", headers = "X-API-Version=v1")
+	public ResponseEntity<Usuario> indexV1(@PathVariable(value = "id") Long id) {
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
+		
+		System.out.println("Versão 1");
+		
+		return ResponseEntity.ok(usuario.get());
+	}
+	
+	@GetMapping(value = "/{id}", produces = "application/json", headers = "X-API-Version=v2")
+	public ResponseEntity<Usuario> indexV2(@PathVariable(value = "id") Long id) {
+		Optional<Usuario> usuario = usuarioRepository.findById(id);
+		
+		System.out.println("Versão 2");
 		
 		return ResponseEntity.ok(usuario.get());
 	}
