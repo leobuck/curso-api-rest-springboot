@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -72,7 +73,9 @@ public class IndexController {
 	}
 	
 	@GetMapping(value = "/", produces = "application/json")
-	@Cacheable("cacheusuarios")
+//	@Cacheable("cacheusuarios")
+	@CacheEvict(value = "cacheusuarios", allEntries = true)
+	@CachePut("cacheusuarios")
 	public ResponseEntity<List<Usuario>> usuarios() {
 		List<Usuario> lista = (List<Usuario>) usuarioRepository.findAll();
 		
