@@ -50,9 +50,10 @@ public class JWTTokenAutenticacaoService {
 		String token = request.getHeader(HEADER_STRING);
 		
 		if (token != null) {
+			String tokenLimpo = token.replace(TOKEN_PREFIX, "").trim();
 			String user = Jwts.parser()
 					.setSigningKey(SECRET)
-					.parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+					.parseClaimsJws(tokenLimpo)
 					.getBody()
 					.getSubject();
 			if (user != null) {
@@ -61,8 +62,12 @@ public class JWTTokenAutenticacaoService {
 						.findUserByLogin(user);
 				
 				if (usuario != null) {
-					return new UsernamePasswordAuthenticationToken(
-							usuario.getLogin(), usuario.getSenha(), usuario.getAuthorities());
+					
+					if (tokenLimpo.equalsIgnoreCase(usuario.getToken())) {
+						
+						return new UsernamePasswordAuthenticationToken(
+								usuario.getLogin(), usuario.getSenha(), usuario.getAuthorities());
+					}
 				}
 			}
 		}

@@ -68,6 +68,8 @@ public class Usuario implements UserDetails {
 	)
 	private List<Role> roles;
 
+	private String token;
+	
 	public Long getId() {
 		return id;
 	}
@@ -106,6 +108,14 @@ public class Usuario implements UserDetails {
 
 	public void setTelefones(List<Telefone> telefones) {
 		this.telefones = telefones;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 	@Override
