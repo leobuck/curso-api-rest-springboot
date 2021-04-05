@@ -15,6 +15,7 @@ import com.leo.cursoapirest.ApplicationContextLoad;
 import com.leo.cursoapirest.model.Usuario;
 import com.leo.cursoapirest.repository.UsuarioRepository;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -51,26 +52,38 @@ public class JWTTokenAutenticacaoService {
 	public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
 		String token = request.getHeader(HEADER_STRING);
 		
-		if (token != null) {
-			String tokenLimpo = token.replace(TOKEN_PREFIX, "").trim();
-			String user = Jwts.parser()
-					.setSigningKey(SECRET)
-					.parseClaimsJws(tokenLimpo)
-					.getBody()
-					.getSubject();
-			if (user != null) {
-				Usuario usuario = ApplicationContextLoad.getApplicationContext()
-						.getBean(UsuarioRepository.class)
-						.findUserByLogin(user);
+		try {
+			
+			if (token != null) {
+				String tokenLimpo = token.replace(TOKEN_PREFIX, "").trim();
 				
-				if (usuario != null) {
+				String user = Jwts.parser()
+						.setSigningKey(SECRET)
+						.parseClaimsJws(tokenLimpo)
+						.getBody()
+						.getSubject();
+				if (user != null) {
+					Usuario usuario = ApplicationContextLoad.getApplicationContext()
+							.getBean(UsuarioRepository.class)
+							.findUserByLogin(user);
 					
-					if (tokenLimpo.equalsIgnoreCase(usuario.getToken())) {
+					if (usuario != null) {
 						
-						return new UsernamePasswordAuthenticationToken(
-								usuario.getLogin(), usuario.getSenha(), usuario.getAuthorities());
+						if (tokenLimpo.equalsIgnoreCase(usuario.getToken())) {
+							
+							return new UsernamePasswordAuthenticationToken(
+									usuario.getLogin(), usuario.getSenha(), usuario.getAuthorities());
+						}
 					}
 				}
+			}
+		
+		} catch (ExpiredJwtException e) {
+			try {
+				response.getOutputStream().println("Seu TOKEN está expirado, faça novamente o login"
+						+ " ou informe um novo TOKEN para autenticação");
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
 		}
 		
