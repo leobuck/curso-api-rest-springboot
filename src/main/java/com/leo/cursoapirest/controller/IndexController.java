@@ -1,5 +1,11 @@
 package com.leo.cursoapirest.controller;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
 import com.leo.cursoapirest.model.Usuario;
 import com.leo.cursoapirest.model.UsuarioDTO;
 import com.leo.cursoapirest.repository.UsuarioRepository;
@@ -84,8 +91,25 @@ public class IndexController {
 	}
 	
 	@PostMapping(value = "/", produces = "application/json")
-	public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario usuario) {
+	public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario usuario) throws IOException {
 		usuario.getTelefones().forEach(x -> x.setUsuario(usuario));
+		
+		// Consumindo API ViaCEP
+		URL url = new URL("https://viacep.com.br/ws/" + usuario.getCep() + "/json/");
+		URLConnection connection = url.openConnection();
+		InputStream is = connection.getInputStream();
+		BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+		String cep = "";
+		StringBuilder jsonCep = new StringBuilder();
+		while ((cep = br.readLine()) != null) {
+			jsonCep.append(cep);
+		}
+		Usuario usuarioAux = new Gson().fromJson(jsonCep.toString(), Usuario.class);
+		usuario.setLogradouro(usuarioAux.getLogradouro());
+		usuario.setComplemento(usuarioAux.getComplemento());
+		usuario.setBairro(usuarioAux.getBairro());
+		usuario.setLocalidade(usuarioAux.getLocalidade());
+		usuario.setUf(usuarioAux.getUf());
 		
 		usuario.setSenha(new BCryptPasswordEncoder().encode(usuario.getSenha()));
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
