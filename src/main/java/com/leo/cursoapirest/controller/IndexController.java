@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.leo.cursoapirest.model.Usuario;
+import com.leo.cursoapirest.model.UsuarioDTO;
 import com.leo.cursoapirest.repository.UsuarioRepository;
 
 //@CrossOrigin(origins = "*")
@@ -30,10 +31,10 @@ public class IndexController {
 
 //	@CrossOrigin(origins = "http://localhost:8080/")
 	@GetMapping(value = "/{id}/relatorio/{venda}", produces = "application/json")
-	public ResponseEntity<Usuario> relatorio(@PathVariable(value = "id") Long id, @PathVariable(value = "venda") Long venda) {
+	public ResponseEntity<UsuarioDTO> relatorio(@PathVariable(value = "id") Long id, @PathVariable(value = "venda") Long venda) {
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
 		
-		return ResponseEntity.ok(usuario.get());
+		return ResponseEntity.ok(new UsuarioDTO(usuario.get()));
 	}
 	
 //	@GetMapping(value = "/v1/{id}", produces = "application/json")
