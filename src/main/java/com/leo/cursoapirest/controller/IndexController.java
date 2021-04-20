@@ -14,6 +14,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +29,7 @@ import com.leo.cursoapirest.model.Usuario;
 import com.leo.cursoapirest.model.UsuarioDTO;
 import com.leo.cursoapirest.repository.UsuarioRepository;
 
-//@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping(value = "/usuario")
 public class IndexController {
@@ -61,6 +62,13 @@ public class IndexController {
 //		
 //		return ResponseEntity.ok(usuario.get());
 //	}
+	
+	@GetMapping(value = "/{id}", produces = "application/json")
+	public ResponseEntity<Usuario> index(@PathVariable(value = "id") Long id) {
+		Optional<Usuario> usuario = usuarioRepository.findById(id);
+		
+		return ResponseEntity.ok(usuario.get());
+	}
 	
 	@GetMapping(value = "/{id}", produces = "application/json", headers = "X-API-Version=v1")
 	public ResponseEntity<Usuario> indexV1(@PathVariable(value = "id") Long id) {

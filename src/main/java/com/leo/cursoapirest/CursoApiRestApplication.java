@@ -33,10 +33,11 @@ public class CursoApiRestApplication implements WebMvcConfigurer {
 		System.out.println(new BCryptPasswordEncoder().encode("123"));
 	}
 
-	@Override
-	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/usuario/**")
-			.allowedMethods("*")
-			.allowedOrigins("*");
-	}
+//	@Override
+//	public void addCorsMappings(CorsRegistry registry) {
+//		registry.addMapping("/usuario/**")
+//			.allowedMethods("*")
+//			.allowCredentials(false)
+//			.allowedOrigins("*");
+//	}
 }
