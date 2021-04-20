@@ -90,6 +90,16 @@ public class IndexController {
 		return ResponseEntity.ok(lista);
 	}
 	
+	@GetMapping(value = "/usuariosPorNome/{nome}", produces = "application/json")
+	@CacheEvict(value = "cacheusuarios", allEntries = true)
+	@CachePut("cacheusuarios")
+	public ResponseEntity<List<Usuario>> usuariosPorNome(@PathVariable("nome") String nome) {
+		
+		List<Usuario> lista = usuarioRepository.findUserByNome(nome);
+		
+		return ResponseEntity.ok(lista);
+	}
+	
 	@PostMapping(value = "/", produces = "application/json")
 	public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario usuario) throws IOException {
 		usuario.getTelefones().forEach(x -> x.setUsuario(usuario));
