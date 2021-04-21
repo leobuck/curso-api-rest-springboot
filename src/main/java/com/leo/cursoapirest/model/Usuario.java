@@ -66,7 +66,7 @@ public class Usuario implements UserDetails {
 				foreignKey = @ForeignKey(name = "role_fk", value = ConstraintMode.CONSTRAINT)
 		)
 	)
-	private List<Role> roles;
+	private List<Role> roles = new ArrayList<Role>();
 
 	private String token;
 	

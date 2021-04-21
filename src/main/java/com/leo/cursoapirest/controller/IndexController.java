@@ -139,7 +139,7 @@ public class IndexController {
 	public ResponseEntity<Usuario> atualizar(@RequestBody Usuario usuario) {
 		usuario.getTelefones().forEach(x -> x.setUsuario(usuario));
 		
-		Usuario usuarioTemp = usuarioRepository.findUserByLogin(usuario.getLogin());
+		Usuario usuarioTemp = usuarioRepository.findById(usuario.getId()).get();
 		if (!usuarioTemp.getSenha().equals(usuario.getSenha())) {
 			usuario.setSenha(new BCryptPasswordEncoder().encode(usuario.getSenha()));
 		}

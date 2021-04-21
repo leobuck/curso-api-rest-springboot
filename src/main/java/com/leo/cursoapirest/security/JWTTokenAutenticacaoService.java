@@ -91,7 +91,7 @@ public class JWTTokenAutenticacaoService {
 			}
 		}
 		
-		liberacaoCors(response);
+		//liberacaoCors(response);
 		
 		return null;
 	}
