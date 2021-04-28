@@ -28,6 +28,7 @@ import com.google.gson.Gson;
 import com.leo.cursoapirest.model.Usuario;
 import com.leo.cursoapirest.model.UsuarioDTO;
 import com.leo.cursoapirest.repository.UsuarioRepository;
+import com.leo.cursoapirest.service.UserDetailServiceImp;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -36,6 +37,9 @@ public class IndexController {
 	
 	@Autowired
 	private UsuarioRepository usuarioRepository;
+	
+	@Autowired
+	private UserDetailServiceImp userDetailServiceImp;
 
 //	@CrossOrigin(origins = "http://localhost:8080/")
 	@GetMapping(value = "/{id}/relatorio/{venda}", produces = "application/json")
@@ -131,6 +135,8 @@ public class IndexController {
 		
 		usuario.setSenha(new BCryptPasswordEncoder().encode(usuario.getSenha()));
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
+		
+		userDetailServiceImp.insereRolePadrao(usuarioSalvo.getId());
 		
 		return ResponseEntity.ok(usuarioSalvo);
 	}

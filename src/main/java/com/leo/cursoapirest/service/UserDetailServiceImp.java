@@ -1,6 +1,7 @@
 package com.leo.cursoapirest.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +17,9 @@ public class UserDetailServiceImp implements UserDetailsService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Usuario usuario = usuarioRepository.findUserByLogin(username);
@@ -25,6 +29,15 @@ public class UserDetailServiceImp implements UserDetailsService {
 		}
 		
 		return new User(usuario.getLogin(), usuario.getSenha(), usuario.getAuthorities());
+	}
+	
+	public void insereRolePadrao(Long idUsuario) {
+		String constraint = usuarioRepository.consultaConstraintRole();
+		
+		if (!constraint.isEmpty())
+			jdbcTemplate.execute("alter table usuario_role drop constraint " + constraint);
+		
+		usuarioRepository.insereRolePadrao(idUsuario);		
 	}
 
 }
