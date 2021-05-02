@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.Gson;
 import com.leo.cursoapirest.model.Usuario;
 import com.leo.cursoapirest.model.UsuarioDTO;
+import com.leo.cursoapirest.repository.TelefoneRepository;
 import com.leo.cursoapirest.repository.UsuarioRepository;
 import com.leo.cursoapirest.service.UserDetailServiceImp;
 
@@ -37,6 +38,9 @@ public class IndexController {
 	
 	@Autowired
 	private UsuarioRepository usuarioRepository;
+	
+	@Autowired
+	private TelefoneRepository telefoneRepository;
 	
 	@Autowired
 	private UserDetailServiceImp userDetailServiceImp;
@@ -158,6 +162,13 @@ public class IndexController {
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<String> deletar(@PathVariable("id") Long id) {
 		usuarioRepository.deleteById(id);
+		
+		return ResponseEntity.ok("ok");
+	}
+	
+	@DeleteMapping(value = "/deletarTelefone/{id}", produces = "application/text")
+	public ResponseEntity<String> deletarTelefone(@PathVariable("id") Long id) {
+		telefoneRepository.deleteById(id);
 		
 		return ResponseEntity.ok("ok");
 	}
