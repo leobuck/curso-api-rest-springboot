@@ -111,6 +111,17 @@ public class IndexController {
 		return ResponseEntity.ok(lista);
 	}
 	
+	@GetMapping(value = "/page/{pagina}", produces = "application/json")
+	@CacheEvict(value = "cacheusuarios", allEntries = true)
+	@CachePut("cacheusuarios")
+	public ResponseEntity<Page<Usuario>> usuariosPorPagina(@PathVariable("pagina") int pagina) {
+		PageRequest page = PageRequest.of(pagina, 5, Sort.by("nome"));
+		
+		Page<Usuario> lista = usuarioRepository.findAll(page);
+		
+		return ResponseEntity.ok(lista);
+	}
+	
 	@GetMapping(value = "/usuariosPorNome/{nome}", produces = "application/json")
 	@CacheEvict(value = "cacheusuarios", allEntries = true)
 	@CachePut("cacheusuarios")
