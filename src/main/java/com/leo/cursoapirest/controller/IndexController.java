@@ -12,6 +12,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -100,8 +103,10 @@ public class IndexController {
 //	@Cacheable("cacheusuarios")
 	@CacheEvict(value = "cacheusuarios", allEntries = true)
 	@CachePut("cacheusuarios")
-	public ResponseEntity<List<Usuario>> usuarios() {
-		List<Usuario> lista = (List<Usuario>) usuarioRepository.findAll();
+	public ResponseEntity<Page<Usuario>> usuarios() {
+		PageRequest page = PageRequest.of(0, 5, Sort.by("nome"));
+		
+		Page<Usuario> lista = usuarioRepository.findAll(page);
 		
 		return ResponseEntity.ok(lista);
 	}
