@@ -34,7 +34,7 @@ public class UserDetailServiceImp implements UserDetailsService {
 	public void insereRolePadrao(Long idUsuario) {
 		String constraint = usuarioRepository.consultaConstraintRole();
 		
-		if (!constraint.isEmpty())
+		if (constraint != null && !constraint.isEmpty())
 			jdbcTemplate.execute("alter table usuario_role drop constraint " + constraint);
 		
 		usuarioRepository.insereRolePadrao(idUsuario);		
