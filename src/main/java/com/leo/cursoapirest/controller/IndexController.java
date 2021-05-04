@@ -138,6 +138,25 @@ public class IndexController {
 		return ResponseEntity.ok(lista);
 	}
 	
+	@GetMapping(value = "/usuariosPorNome/{nome}/page/{pagina}", produces = "application/json")
+	@CacheEvict(value = "cacheusuarios", allEntries = true)
+	@CachePut("cacheusuarios")
+	public ResponseEntity<Page<Usuario>> usuariosPorNomePorPagina(
+			@PathVariable("nome") String nome,
+			@PathVariable("pagina") int pagina) {
+		Page<Usuario> lista = null;
+		
+		PageRequest pageRequest = PageRequest.of(pagina, 5, Sort.by("nome"));
+		
+		if (nome == null || (nome != null && nome.trim().isEmpty()) || nome.equalsIgnoreCase("undefined")) {
+			lista = usuarioRepository.findAll(pageRequest);
+		} else {
+			lista = usuarioRepository.findUserByNomePage(nome, pageRequest);
+		}
+		
+		return ResponseEntity.ok(lista);
+	}
+	
 	@PostMapping(value = "/", produces = "application/json")
 	public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario usuario) throws IOException {
 		usuario.getTelefones().forEach(x -> x.setUsuario(usuario));
