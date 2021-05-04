@@ -2,6 +2,7 @@ package com.leo.cursoapirest.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -16,11 +17,15 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -31,57 +36,41 @@ public class Usuario implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
+
 	@Column(unique = true)
 	private String login;
-	
+
 	private String senha;
-	
+
 	private String nome;
-	
+
 	@OneToMany(mappedBy = "usuario", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Telefone> telefones = new ArrayList<Telefone>();
-	
+
 	@OneToMany(fetch = FetchType.EAGER)
-	@JoinTable(
-		name = "usuario_role", 
-		uniqueConstraints = @UniqueConstraint(
-				columnNames = {"usuario_id", "role_id"}, 
-				name = "unique_usuario_role"
-		),
-		joinColumns = @JoinColumn(
-				name = "usuario_id", 
-				referencedColumnName = "id", 
-				table = "usuario",
-				unique = false,
-				updatable = false,
-				foreignKey = @ForeignKey(name = "usuario_fk", value = ConstraintMode.CONSTRAINT)
-		),
-		inverseJoinColumns = @JoinColumn(
-				name = "role_id", 
-				referencedColumnName = "id", 
-				table = "role", 
-				unique = false,
-				updatable = false,
-				foreignKey = @ForeignKey(name = "role_fk", value = ConstraintMode.CONSTRAINT)
-		)
-	)
+	@JoinTable(name = "usuario_role", uniqueConstraints = @UniqueConstraint(columnNames = { "usuario_id",
+			"role_id" }, name = "unique_usuario_role"), joinColumns = @JoinColumn(name = "usuario_id", referencedColumnName = "id", table = "usuario", unique = false, updatable = false, foreignKey = @ForeignKey(name = "usuario_fk", value = ConstraintMode.CONSTRAINT)), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", table = "role", unique = false, updatable = false, foreignKey = @ForeignKey(name = "role_fk", value = ConstraintMode.CONSTRAINT)))
 	private List<Role> roles = new ArrayList<Role>();
 
 	private String token;
-	
+
 	private String cep;
-	
+
 	private String logradouro;
-	
+
 	private String complemento;
-	
+
 	private String bairro;
-	
+
 	private String localidade;
-	
+
 	private String uf;
-	
+
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(iso = ISO.DATE, pattern = "dd/MM/yyyy")
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	private Date dataNascimento;
+
 	public Long getId() {
 		return id;
 	}
@@ -178,6 +167,14 @@ public class Usuario implements UserDetails {
 		this.uf = uf;
 	}
 
+	public Date getDataNascimento() {
+		return dataNascimento;
+	}
+
+	public void setDataNascimento(Date dataNascimento) {
+		this.dataNascimento = dataNascimento;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -204,7 +201,7 @@ public class Usuario implements UserDetails {
 	}
 
 	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
+	public Collection<Role> getAuthorities() {
 		return roles;
 	}
 
@@ -243,5 +240,5 @@ public class Usuario implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
-	
+
 }
