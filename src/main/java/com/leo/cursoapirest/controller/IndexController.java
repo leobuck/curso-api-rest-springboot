@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,9 +124,16 @@ public class IndexController {
 	@GetMapping(value = "/usuariosPorNome/{nome}", produces = "application/json")
 	@CacheEvict(value = "cacheusuarios", allEntries = true)
 	@CachePut("cacheusuarios")
-	public ResponseEntity<List<Usuario>> usuariosPorNome(@PathVariable("nome") String nome) {
+	public ResponseEntity<Page<Usuario>> usuariosPorNome(@PathVariable("nome") String nome) {
+		Page<Usuario> lista = null;
 		
-		List<Usuario> lista = usuarioRepository.findUserByNome(nome);
+		PageRequest pageRequest = PageRequest.of(0, 5, Sort.by("nome"));
+		
+		if (nome == null || (nome != null && nome.trim().isEmpty()) || nome.equalsIgnoreCase("undefined")) {
+			lista = usuarioRepository.findAll(pageRequest);
+		} else {
+			lista = usuarioRepository.findUserByNomePage(nome, pageRequest);
+		}
 		
 		return ResponseEntity.ok(lista);
 	}
