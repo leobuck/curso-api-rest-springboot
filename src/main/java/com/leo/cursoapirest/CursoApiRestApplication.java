@@ -38,5 +38,9 @@ public class CursoApiRestApplication implements WebMvcConfigurer {
 		registry.addMapping("/usuario/**")
 			.allowedMethods("GET", "POST", "PUT", "DELETE")
 			.allowedOrigins("http://localhost:4200");
+		
+		registry.addMapping("/profissao/**")
+		.allowedMethods("GET", "POST", "PUT", "DELETE")
+		.allowedOrigins("http://localhost:4200");
 	}
 }
