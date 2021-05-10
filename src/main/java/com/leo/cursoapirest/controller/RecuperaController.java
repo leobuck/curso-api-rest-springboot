@@ -7,6 +7,7 @@ import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +40,8 @@ public class RecuperaController {
 		} else {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			String senhaNova = dateFormat.format(Calendar.getInstance().getTime());
-			usuarioRepository.atualizaSenha(senhaNova, usuario.getId());
+			
+			usuarioRepository.atualizaSenha(new BCryptPasswordEncoder().encode(senhaNova), usuario.getId());
 			
 			emailService.enviarEmail("Recuperação de senha", usuario.getLogin(), "Sua nova senha é: " + senhaNova);
 			

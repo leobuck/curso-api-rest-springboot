@@ -22,6 +22,8 @@ public class EmailService {
 
 	public void enviarEmail(String assunto, String emailDestino, String mensagem) throws MessagingException {
 		Properties properties = new Properties();
+		
+		properties.put("mail.smtp.ssl.trust", "*");
 		properties.put("mail.smtp.auth", "true");
 		properties.put("mail.smtp.starttls", "true");
 		properties.put("mail.smtp.host", "smtp.gmail.com");
