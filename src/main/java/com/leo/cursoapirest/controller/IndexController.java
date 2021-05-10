@@ -6,8 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.SQLException;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -31,7 +35,10 @@ import com.leo.cursoapirest.model.Usuario;
 import com.leo.cursoapirest.model.UsuarioDTO;
 import com.leo.cursoapirest.repository.TelefoneRepository;
 import com.leo.cursoapirest.repository.UsuarioRepository;
+import com.leo.cursoapirest.service.RelatorioService;
 import com.leo.cursoapirest.service.UserDetailServiceImp;
+
+import net.sf.jasperreports.engine.JRException;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -46,6 +53,9 @@ public class IndexController {
 	
 	@Autowired
 	private UserDetailServiceImp userDetailServiceImp;
+	
+	@Autowired
+	private RelatorioService relatorioService;
 
 //	@CrossOrigin(origins = "http://localhost:8080/")
 	@GetMapping(value = "/{id}/relatorio/{venda}", produces = "application/json")
@@ -212,5 +222,14 @@ public class IndexController {
 		telefoneRepository.deleteById(id);
 		
 		return ResponseEntity.ok("ok");
+	}
+	
+	@GetMapping(value = "/relatorio", produces = "application/text")
+	public ResponseEntity<String> downloadRelatorio(HttpServletRequest request) throws SQLException, JRException {
+		byte[] pdf = relatorioService.gerarRelatorio("relatorio-usuario", request.getServletContext());
+		
+		String base64Pdf = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
+		
+		return ResponseEntity.ok(base64Pdf);
 	}
 }

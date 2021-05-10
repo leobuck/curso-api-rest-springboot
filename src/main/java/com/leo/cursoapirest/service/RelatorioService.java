@@ -32,6 +32,10 @@ public class RelatorioService implements Serializable {
 		
 		JasperPrint print = JasperFillManager.fillReport(caminhoJasper, new HashMap<>(), connection);
 		
-		return JasperExportManager.exportReportToPdf(print);
+		byte[] pdf = JasperExportManager.exportReportToPdf(print);
+		
+		connection.close();
+		
+		return pdf;
 	}
 }
