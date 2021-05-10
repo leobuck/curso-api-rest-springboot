@@ -74,7 +74,7 @@ public class Usuario implements UserDetails {
 	private Date dataNascimento;
 	
 	@ManyToOne
-	private Profissao profissao;
+	private Profissao profissao = new Profissao();
 	
 	private BigDecimal salario;
 
