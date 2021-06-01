@@ -7,6 +7,10 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -227,7 +231,7 @@ public class IndexController {
 	
 	@GetMapping(value = "/relatorio", produces = "application/text")
 	public ResponseEntity<String> downloadRelatorio(HttpServletRequest request) throws SQLException, JRException {
-		byte[] pdf = relatorioService.gerarRelatorio("relatorio-usuario", request.getServletContext());
+		byte[] pdf = relatorioService.gerarRelatorio("relatorio-usuario", new HashMap<>(), request.getServletContext());
 		
 		String base64Pdf = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
 		
@@ -235,8 +239,20 @@ public class IndexController {
 	}
 	
 	@PostMapping(value = "/relatorio", produces = "application/text")
-	public ResponseEntity<String> downloadRelatorioParam(HttpServletRequest request, @RequestBody UsuarioRelatorioDTO relatorio) throws SQLException, JRException {
-		byte[] pdf = relatorioService.gerarRelatorio("relatorio-usuario", request.getServletContext());
+	public ResponseEntity<String> downloadRelatorioParam(HttpServletRequest request, @RequestBody UsuarioRelatorioDTO relatorio) 
+			throws SQLException, JRException, ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		
+		SimpleDateFormat sdfParam = new SimpleDateFormat("yyyy-MM-dd");
+		
+		String dataInicio = sdfParam.format(sdf.parse(relatorio.getDataInicio()));
+		String dataFim = sdfParam.format(sdf.parse(relatorio.getDataFim()));
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("DATA_INICIO", dataInicio);
+		params.put("DATA_FIM", dataFim);
+		
+		byte[] pdf = relatorioService.gerarRelatorio("relatorio-usuario-param", params, request.getServletContext());
 		
 		String base64Pdf = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
 		
