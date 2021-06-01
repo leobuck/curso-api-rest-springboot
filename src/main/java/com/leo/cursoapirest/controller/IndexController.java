@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.Gson;
 import com.leo.cursoapirest.model.Usuario;
 import com.leo.cursoapirest.model.UsuarioDTO;
+import com.leo.cursoapirest.model.UsuarioRelatorioDTO;
 import com.leo.cursoapirest.repository.TelefoneRepository;
 import com.leo.cursoapirest.repository.UsuarioRepository;
 import com.leo.cursoapirest.service.RelatorioService;
@@ -226,6 +227,15 @@ public class IndexController {
 	
 	@GetMapping(value = "/relatorio", produces = "application/text")
 	public ResponseEntity<String> downloadRelatorio(HttpServletRequest request) throws SQLException, JRException {
+		byte[] pdf = relatorioService.gerarRelatorio("relatorio-usuario", request.getServletContext());
+		
+		String base64Pdf = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
+		
+		return ResponseEntity.ok(base64Pdf);
+	}
+	
+	@PostMapping(value = "/relatorio", produces = "application/text")
+	public ResponseEntity<String> downloadRelatorioParam(HttpServletRequest request, @RequestBody UsuarioRelatorioDTO relatorio) throws SQLException, JRException {
 		byte[] pdf = relatorioService.gerarRelatorio("relatorio-usuario", request.getServletContext());
 		
 		String base64Pdf = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
