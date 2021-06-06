@@ -270,12 +270,13 @@ public class IndexController {
 		UsuarioGraficoDTO grafico = new UsuarioGraficoDTO();
 		
 		List<String> resultado = 
-		jdbcTemplate.queryForList("SELECT array_agg('''' || nome || '''') FROM usuario"
+		jdbcTemplate.queryForList("SELECT array_agg(nome) FROM usuario WHERE salario > 0"
 				+ " UNION ALL "
-				+ " SELECT cast(array_agg(salario) AS character varying[]) FROM usuario", String.class);
+				+ " SELECT cast(array_agg(salario) AS character varying[]) FROM usuario WHERE salario > 0", 
+				String.class);
 		
 		if (!resultado.isEmpty()) {
-			String nomes = resultado.get(0).replaceAll("\\{", "").replaceAll("\\}", "");
+			String nomes = resultado.get(0).replaceAll("\\{", "").replaceAll("\\}", "").replace("\"", "");
 			String salarios = resultado.get(1).replaceAll("\\{", "").replaceAll("\\}", "");
 			grafico.setNome(nomes);
 			grafico.setSalario(salarios);
