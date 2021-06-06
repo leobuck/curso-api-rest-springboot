@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.Gson;
 import com.leo.cursoapirest.model.Usuario;
 import com.leo.cursoapirest.model.UsuarioDTO;
+import com.leo.cursoapirest.model.UsuarioGraficoDTO;
 import com.leo.cursoapirest.model.UsuarioRelatorioDTO;
 import com.leo.cursoapirest.repository.TelefoneRepository;
 import com.leo.cursoapirest.repository.UsuarioRepository;
@@ -61,6 +64,9 @@ public class IndexController {
 	
 	@Autowired
 	private RelatorioService relatorioService;
+	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 //	@CrossOrigin(origins = "http://localhost:8080/")
 	@GetMapping(value = "/{id}/relatorio/{venda}", produces = "application/json")
@@ -257,5 +263,24 @@ public class IndexController {
 		String base64Pdf = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
 		
 		return ResponseEntity.ok(base64Pdf);
+	}
+	
+	@GetMapping(value = "/grafico", produces = "application/json")
+	public ResponseEntity<UsuarioGraficoDTO> grafico() {
+		UsuarioGraficoDTO grafico = new UsuarioGraficoDTO();
+		
+		List<String> resultado = 
+		jdbcTemplate.queryForList("SELECT array_agg('''' || nome || '''') FROM usuario"
+				+ " UNION ALL "
+				+ " SELECT cast(array_agg(salario) AS character varying[]) FROM usuario", String.class);
+		
+		if (!resultado.isEmpty()) {
+			String nomes = resultado.get(0).replaceAll("\\{", "").replaceAll("\\}", "");
+			String salarios = resultado.get(1).replaceAll("\\{", "").replaceAll("\\}", "");
+			grafico.setNome(nomes);
+			grafico.setSalario(salarios);
+		}
+		
+		return ResponseEntity.ok(grafico);
 	}
 }
