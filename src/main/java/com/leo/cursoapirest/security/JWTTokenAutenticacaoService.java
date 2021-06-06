@@ -89,9 +89,8 @@ public class JWTTokenAutenticacaoService {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
+			liberacaoCors(response);
 		}
-		
-		//liberacaoCors(response);
 		
 		return null;
 	}
